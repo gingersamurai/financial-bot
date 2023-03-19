@@ -1,5 +1,7 @@
 package messages
 
+import "strings"
+
 type MessageSender interface {
 	SendMessage(text string, userID int64) error
 }
@@ -20,8 +22,14 @@ type Message struct {
 }
 
 func (s *Model) IncomingMessage(msg Message) error {
-	if msg.Text == "/start" {
+	switch {
+	case msg.Text == "/start":
 		return s.tgClient.SendMessage("hello", msg.UserID)
+
+	case strings.HasPrefix(msg.Text, "/addSpending"):
+
+	default:
+		return s.tgClient.SendMessage("я не знаю эту команду", msg.UserID)
 	}
-	return s.tgClient.SendMessage("я не знаю эту команду", msg.UserID)
+	return nil
 }
