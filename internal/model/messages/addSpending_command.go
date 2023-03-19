@@ -8,10 +8,10 @@ type Spending struct {
 	date  time.Time
 }
 
-func parseMessage(rawData string) (Spending, error) {
+// func parseMessage(rawData string) (Spending, error) {
 
-}
+// }
 
-func addSpending(msg Message) error {
+// func addSpending(msg Message) error {
 
-}
+// }
