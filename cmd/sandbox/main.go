@@ -20,7 +20,7 @@ func parseDateFromMessage(dest *time.Time, src string) error {
 func parseMessage(rawData string, dest *Spending) error {
 	rawDataSlice := strings.Split(rawData, " ")
 	var err error
-	if len(rawDataSlice) == 3 || len(rawDataSlice) == 3 {
+	if len(rawDataSlice) == 3 || len(rawDataSlice) == 4 {
 
 		dest.count, err = strconv.Atoi(string(rawData[1]))
 		if err != nil {
@@ -43,5 +43,5 @@ func parseMessage(rawData string, dest *Spending) error {
 }
 
 func main() {
-	fmt.Println(time.Now())
+	err := parseMessage()
 }
