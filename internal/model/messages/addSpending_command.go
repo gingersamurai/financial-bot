@@ -23,19 +23,19 @@ func parseDateFromMessage(dest *time.Time, src string) error {
 
 }
 
-func parseMessage(rawData string, dest *Spending) error {
+func parseAddSpendingMessage(rawData string, dest *Spending) error {
 	rawDataSlice := strings.Split(rawData, " ")
 	var err error
 	if len(rawDataSlice) == 3 || len(rawDataSlice) == 4 {
 
 		// validate count
-		dest.count, err = strconv.Atoi(string(rawData[1]))
+		dest.count, err = strconv.Atoi(string(rawDataSlice[1]))
 		if err != nil {
 			return err
 		}
 
 		// validate group
-		dest.group = string(rawData[2])
+		dest.group = string(rawDataSlice[2])
 
 		// validate case with date
 		if len(rawDataSlice) == 4 {
