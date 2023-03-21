@@ -2,6 +2,8 @@ package messages
 
 import (
 	"strings"
+
+	"github.com/gingersamurai/financial-bot/internal/model/storage"
 )
 
 type MessageSender interface {
@@ -23,14 +25,16 @@ type Message struct {
 	UserID int64
 }
 
+var myMemoryStorage storage.MemoryStorage
+
 func (s *Model) IncomingMessage(msg Message) error {
 	switch {
 	case msg.Text == "/start":
-		memoryStorage = NewMemoryStorage()
+		myMemoryStorage = storage.NewMemoryStorage()
 		return s.tgClient.SendMessage("hello", msg.UserID)
 
 	case strings.HasPrefix(msg.Text, "/addSpending"):
-		addSpending(msg, &memoryStorage)
+		addSpending(msg, &myMemoryStorage)
 		return s.tgClient.SendMessage("трата добавлена", msg.UserID)
 	default:
 		return s.tgClient.SendMessage("я не знаю эту команду", msg.UserID)
