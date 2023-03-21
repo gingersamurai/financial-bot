@@ -33,7 +33,7 @@ func (m *MemoryStorage) Insert(spending Spending) error {
 	return nil
 }
 
-func (m MemoryStorage) Find(startDate time.Time, finishDate time.Time) (map[string][]Spending, error) {
+func (m *MemoryStorage) Find(startDate time.Time, finishDate time.Time) (map[string][]Spending, error) {
 	result := make(map[string][]Spending)
 	for k, v := range m.storage {
 		for _, elem := range v {
@@ -44,6 +44,8 @@ func (m MemoryStorage) Find(startDate time.Time, finishDate time.Time) (map[stri
 	}
 	return result, nil
 }
+
+var myStorage MemoryStorage
 
 func parseDateFromMessage(dest *time.Time, src string) error {
 	layout := "01/02/2006" // month/day/year
