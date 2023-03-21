@@ -21,8 +21,8 @@ func parseDateFromMessage(dest *time.Time, src string) error {
 
 func parseAddSpendingMessage(rawData string, dest *storage.Spending) error {
 	rawDataSlice := strings.Split(rawData, " ")
-	var err error
 	if len(rawDataSlice) == 3 || len(rawDataSlice) == 4 {
+		var err error
 
 		// validate count
 		dest.Count, err = strconv.Atoi(string(rawDataSlice[1]))
@@ -42,11 +42,10 @@ func parseAddSpendingMessage(rawData string, dest *storage.Spending) error {
 		} else {
 			dest.Date = time.Now()
 		}
-
+		return nil
 	} else {
-		return fmt.Errorf("need 3 or 2 arguments, got %d", len(rawDataSlice))
+		return fmt.Errorf("need 3 or 2 arguments, got %d", len(rawDataSlice)-1)
 	}
-	return nil
 }
 
 func addSpending(msg Message, dest storage.Storage) error {

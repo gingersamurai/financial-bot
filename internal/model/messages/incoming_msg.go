@@ -1,6 +1,7 @@
 package messages
 
 import (
+	"log"
 	"strings"
 
 	"github.com/gingersamurai/financial-bot/internal/model/storage"
@@ -34,8 +35,20 @@ func (s *Model) IncomingMessage(msg Message) error {
 		return s.tgClient.SendMessage("hello", msg.UserID)
 
 	case strings.HasPrefix(msg.Text, "/addSpending"):
-		addSpending(msg, &myMemoryStorage)
+		err := addSpending(msg, &myMemoryStorage)
+		if err != nil {
+			log.Println(err)
+			return s.tgClient.SendMessage(err.Error(), msg.UserID)
+		}
 		return s.tgClient.SendMessage("трата добавлена", msg.UserID)
+	case strings.HasPrefix(msg.Text, "/getReport"):
+		result, err := getReport(msg, &myMemoryStorage)
+		if err != nil {
+			log.Println(err)
+			return s.tgClient.SendMessage(err.Error(), msg.UserID)
+		}
+
+		return s.tgClient.SendMessage(result, msg.UserID)
 	default:
 		return s.tgClient.SendMessage("я не знаю эту команду", msg.UserID)
 	}
