@@ -18,6 +18,8 @@ type Storage interface {
 	Find(startDate time.Time, finishDate time.Time) (map[string][]Spending, error)
 }
 
+var memoryStorage MemoryStorage
+
 type MemoryStorage struct {
 	storage map[string][]Spending
 }
@@ -45,7 +47,16 @@ func (m *MemoryStorage) Find(startDate time.Time, finishDate time.Time) (map[str
 	return result, nil
 }
 
-var myStorage MemoryStorage
+func (m *MemoryStorage) String() string {
+	result := "memoryStorage:\n"
+	for k, v := range m.storage {
+		result += fmt.Sprintf("[%v]\n", k)
+		for _, elem := range v {
+			result += fmt.Sprintf("    %v %v\n", elem.date.Format("01/02/2006"), elem.count)
+		}
+	}
+	return result
+}
 
 func parseDateFromMessage(dest *time.Time, src string) error {
 	layout := "01/02/2006" // month/day/year
