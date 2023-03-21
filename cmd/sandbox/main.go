@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
-	"strings"
 	"time"
 )
 
@@ -13,35 +11,47 @@ type Spending struct {
 	date  time.Time
 }
 
-func parseDateFromMessage(dest *time.Time, src string) error {
+type MemoryStorage struct {
+	storage map[string][]Spending
+}
+
+func NewMemoryStorage() MemoryStorage {
+	result := MemoryStorage{}
+	result.storage = make(map[string][]Spending)
+	return result
+}
+
+func (m *MemoryStorage) Insert(spending Spending) error {
+	m.storage[spending.group] = append(m.storage[spending.group], spending)
 	return nil
 }
 
-func parseMessage(rawData string, dest *Spending) error {
-	rawDataSlice := strings.Split(rawData, " ")
-	var err error
-	if len(rawDataSlice) == 3 || len(rawDataSlice) == 4 {
-
-		dest.count, err = strconv.Atoi(string(rawData[1]))
-		if err != nil {
-			return err
-		}
-
-		dest.group = string(rawData[2])
-
-		if len(rawDataSlice) == 4 {
-			err = parseDateFromMessage(&dest.date, rawDataSlice[3])
-			if err != nil {
-				return err
+func (m MemoryStorage) Find(startDate time.Time, finishDate time.Time) (map[string][]Spending, error) {
+	result := make(map[string][]Spending)
+	for k, v := range m.storage {
+		for _, elem := range v {
+			if elem.date.After(startDate) && elem.date.Before(finishDate) {
+				result[k] = append(result[k], elem)
 			}
 		}
-
-	} else {
-		return fmt.Errorf("need 3 or 2 arguments, got %d", len(rawDataSlice))
 	}
-	return nil
+	return result, nil
 }
 
 func main() {
-	err := parseMessage()
+	s := NewMemoryStorage()
+	s.Insert(Spending{
+		group: "abc",
+		count: 1203,
+		date:  time.Now(),
+	})
+	startDate, _ := time.Parse("01/02/2006", "03/19/2023")
+	finishDate, _ := time.Parse("01/02/2006", "03/21/2024")
+	fmt.Println(s.storage)
+	res, err := s.Find(startDate, finishDate)
+	if err != nil {
+		fmt.Println(res)
+	} else {
+		fmt.Println()
+	}
 }

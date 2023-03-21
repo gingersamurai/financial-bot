@@ -13,6 +13,38 @@ type Spending struct {
 	date  time.Time
 }
 
+type Storage interface {
+	Insert(spending Spending) error
+	Find(startDate time.Time, finishDate time.Time) (map[string][]Spending, error)
+}
+
+type MemoryStorage struct {
+	storage map[string][]Spending
+}
+
+func NewMemoryStorage() MemoryStorage {
+	result := MemoryStorage{}
+	result.storage = make(map[string][]Spending)
+	return result
+}
+
+func (m *MemoryStorage) Insert(spending Spending) error {
+	m.storage[spending.group] = append(m.storage[spending.group], spending)
+	return nil
+}
+
+func (m MemoryStorage) Find(startDate time.Time, finishDate time.Time) (map[string][]Spending, error) {
+	result := make(map[string][]Spending)
+	for k, v := range m.storage {
+		for _, elem := range v {
+			if elem.date.After(startDate) && elem.date.Before(finishDate) {
+				result[k] = append(result[k], elem)
+			}
+		}
+	}
+	return result, nil
+}
+
 func parseDateFromMessage(dest *time.Time, src string) error {
 	layout := "01/02/2006" // month/day/year
 	var err error
@@ -53,7 +85,12 @@ func parseAddSpendingMessage(rawData string, dest *Spending) error {
 	return nil
 }
 
-// func addSpending(msg Message) error {
-// 	Spending
-// 	return parseMessage()
-// }
+func addSpending(msg Message, dest Storage) error {
+	var spending Spending
+	err := parseAddSpendingMessage(msg.Text, &spending)
+	if err != nil {
+		return err
+	}
+	dest.Insert(spending)
+	return nil
+}
